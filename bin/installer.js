@@ -9,19 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
-const definitelytyped_header_parser_1 = require("definitelytyped-header-parser");
 const fs = require("fs-extra");
 const path = require("path");
 const installsDir = path.join(__dirname, '..', 'typescript-installs');
+exports.availableVersions = ['3.0', '3.1', '3.2', '3.3'];
 function installAll() {
     return __awaiter(this, void 0, void 0, function* () {
-        for (const v of definitelytyped_header_parser_1.TypeScriptVersion.all) {
-            // manually instead typescript@next outside the loop
-            if (v === definitelytyped_header_parser_1.TypeScriptVersion.all[definitelytyped_header_parser_1.TypeScriptVersion.all.length - 1])
-                continue;
+        for (const v of exports.availableVersions) {
             yield install(v);
         }
-        yield installNext();
+        // await installNext()
     });
 }
 exports.installAll = installAll;

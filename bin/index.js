@@ -16,6 +16,7 @@ const checks_1 = require("./checks");
 const installer_1 = require("./installer");
 const lint_1 = require("./lint");
 const util_1 = require("./util");
+const installer_2 = require("./installer");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const args = process.argv.slice(2);
@@ -117,12 +118,11 @@ function runTests(dirPath, onlyTestTsNext) {
         //   return version
         // })
         const minVersionFromComment = getTypeScriptVersionFromComment(indexText);
-        const availableVersions = ['3.0', '3.1', '3.2', '3.3'];
-        let index = minVersionFromComment === undefined ? 0 : availableVersions.findIndex(v => v === minVersionFromComment);
+        let index = minVersionFromComment === undefined ? 0 : installer_2.availableVersions.findIndex(v => v === minVersionFromComment);
         if (index === -1) {
             throw new Error('Invalid min version: ' + minVersionFromComment);
         }
-        const typesVersions = availableVersions.slice(index);
+        const typesVersions = installer_2.availableVersions.slice(index);
         console.log('Running type-level tests for the following versions: ' + JSON.stringify(typesVersions));
         if (dt) {
             yield checks_1.checkPackageJson(dirPath, typesVersions);

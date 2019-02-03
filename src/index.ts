@@ -6,6 +6,7 @@ import { checkPackageJson, checkTsconfig } from './checks'
 import { cleanInstalls, installAll, installNext } from './installer'
 import { checkTslintJson, lint, TsVersion } from './lint'
 import { last } from './util'
+import { availableVersions } from './installer'
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2)
@@ -117,7 +118,6 @@ async function runTests(dirPath: string, onlyTestTsNext: boolean): Promise<void>
   //   return version
   // })
   const minVersionFromComment = getTypeScriptVersionFromComment(indexText)
-  const availableVersions: Array<TypeScriptVersion> = ['3.0', '3.1', '3.2', '3.3']
   let index = minVersionFromComment === undefined ? 0 : availableVersions.findIndex(v => v === minVersionFromComment)
   if (index === -1) {
     throw new Error('Invalid min version: ' + minVersionFromComment)
