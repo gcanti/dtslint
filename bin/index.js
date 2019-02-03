@@ -100,22 +100,30 @@ function runTests(dirPath, onlyTestTsNext) {
             // so assert that we're really on DefinitelyTyped.
             assertPathIsInDefinitelyTyped(dirPath);
         }
-        const typesVersions = yield util_1.mapDefinedAsync(yield fs_extra_1.readdir(dirPath), (name) => __awaiter(this, void 0, void 0, function* () {
-            if (name === 'tsconfig.json' || name === 'tslint.json' || name === 'tsutils') {
-                return undefined;
-            }
-            const version = util_1.withoutPrefix(name, 'ts');
-            if (version === undefined || !(yield fs_extra_1.stat(path_1.join(dirPath, name))).isDirectory()) {
-                return undefined;
-            }
-            if (!definitelytyped_header_parser_1.isTypeScriptVersion(version)) {
-                throw new Error(`There is an entry named ${name}, but ${version} is not a valid TypeScript version.`);
-            }
-            if (!definitelytyped_header_parser_1.TypeScriptVersion.isRedirectable(version)) {
-                throw new Error(`At ${dirPath}/${name}: TypeScript version directories only available starting with ts3.1.`);
-            }
-            return version;
-        }));
+        // const typesVersions = await mapDefinedAsync(await readdir(dirPath), async name => {
+        //   if (name === 'tsconfig.json' || name === 'tslint.json' || name === 'tsutils') {
+        //     return undefined
+        //   }
+        //   const version = withoutPrefix(name, 'ts')
+        //   if (version === undefined || !(await stat(joinPaths(dirPath, name))).isDirectory()) {
+        //     return undefined
+        //   }
+        //   if (!isTypeScriptVersion(version)) {
+        //     throw new Error(`There is an entry named ${name}, but ${version} is not a valid TypeScript version.`)
+        //   }
+        //   if (!TypeScriptVersion.isRedirectable(version)) {
+        //     throw new Error(`At ${dirPath}/${name}: TypeScript version directories only available starting with ts3.1.`)
+        //   }
+        //   return version
+        // })
+        const minVersionFromComment = getTypeScriptVersionFromComment(indexText);
+        const availableVersions = ['3.0', '3.1', '3.2', '3.3'];
+        let index = minVersionFromComment === undefined ? 0 : availableVersions.findIndex(v => v === minVersionFromComment);
+        if (index === -1) {
+            throw new Error('Invalid min version: ' + minVersionFromComment);
+        }
+        const typesVersions = availableVersions.slice(index);
+        console.log('Running type-level tests for the following versions: ' + JSON.stringify(typesVersions));
         if (dt) {
             yield checks_1.checkPackageJson(dirPath, typesVersions);
         }
@@ -132,17 +140,29 @@ function runTests(dirPath, onlyTestTsNext) {
             }
         }
         else {
-            yield testTypesVersion(dirPath, undefined, getTsVersion(0), isOlderVersion, dt, indexText);
-            for (let i = 0; i < typesVersions.length; i++) {
-                const version = typesVersions[i];
-                const versionPath = path_1.join(dirPath, `ts${version}`);
-                const versionIndexText = yield fs_extra_1.readFile(path_1.join(versionPath, 'index.d.ts'), 'utf-8');
-                yield testTypesVersion(versionPath, version, getTsVersion(i + 1), isOlderVersion, dt, versionIndexText, 
-                /*inTypesVersionDirectory*/ true);
-            }
-            function getTsVersion(i) {
-                return i === typesVersions.length ? 'next' : util_1.assertDefined(definitelytyped_header_parser_1.TypeScriptVersion.previous(typesVersions[i]));
-            }
+            const version = typesVersions[0];
+            const versionPath = path_1.join(dirPath, `ts${version}`);
+            const versionIndexText = yield fs_extra_1.readFile(path_1.join(versionPath, 'index.d.ts'), 'utf-8');
+            yield testTypesVersion(versionPath, version, typesVersions[typesVersions.length - 1], isOlderVersion, dt, versionIndexText, 
+            /*inTypesVersionDirectory*/ true);
+            // await testTypesVersion(dirPath, undefined, getTsVersion(0), isOlderVersion, dt, indexText)
+            // for (let i = 0; i < typesVersions.length; i++) {
+            //   const version = typesVersions[i]
+            //   const versionPath = joinPaths(dirPath, `ts${version}`)
+            //   const versionIndexText = await readFile(joinPaths(versionPath, 'index.d.ts'), 'utf-8')
+            //   await testTypesVersion(
+            //     versionPath,
+            //     version,
+            //     getTsVersion(i + 1),
+            //     isOlderVersion,
+            //     dt,
+            //     versionIndexText,
+            //     /*inTypesVersionDirectory*/ true
+            //   )
+            // }
+            // function getTsVersion(i: number): TsVersion {
+            //   return i === typesVersions.length ? 'next' : assertDefined(TypeScriptVersion.previous(typesVersions[i]))
+            // }
         }
     });
 }

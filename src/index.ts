@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-import { isTypeScriptVersion, parseTypeScriptVersionLine, TypeScriptVersion } from 'definitelytyped-header-parser'
-import { readdir, readFile, stat } from 'fs-extra'
+import { parseTypeScriptVersionLine, TypeScriptVersion } from 'definitelytyped-header-parser'
+import { readFile } from 'fs-extra'
 import { basename, dirname, join as joinPaths } from 'path'
-
 import { checkPackageJson, checkTsconfig } from './checks'
 import { cleanInstalls, installAll, installNext } from './installer'
 import { checkTslintJson, lint, TsVersion } from './lint'
-import { assertDefined, last, mapDefinedAsync, withoutPrefix } from './util'
+import { last } from './util'
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2)
@@ -100,23 +99,31 @@ async function runTests(dirPath: string, onlyTestTsNext: boolean): Promise<void>
     assertPathIsInDefinitelyTyped(dirPath)
   }
 
-  const typesVersions = await mapDefinedAsync(await readdir(dirPath), async name => {
-    if (name === 'tsconfig.json' || name === 'tslint.json' || name === 'tsutils') {
-      return undefined
-    }
-    const version = withoutPrefix(name, 'ts')
-    if (version === undefined || !(await stat(joinPaths(dirPath, name))).isDirectory()) {
-      return undefined
-    }
+  // const typesVersions = await mapDefinedAsync(await readdir(dirPath), async name => {
+  //   if (name === 'tsconfig.json' || name === 'tslint.json' || name === 'tsutils') {
+  //     return undefined
+  //   }
+  //   const version = withoutPrefix(name, 'ts')
+  //   if (version === undefined || !(await stat(joinPaths(dirPath, name))).isDirectory()) {
+  //     return undefined
+  //   }
 
-    if (!isTypeScriptVersion(version)) {
-      throw new Error(`There is an entry named ${name}, but ${version} is not a valid TypeScript version.`)
-    }
-    if (!TypeScriptVersion.isRedirectable(version)) {
-      throw new Error(`At ${dirPath}/${name}: TypeScript version directories only available starting with ts3.1.`)
-    }
-    return version
-  })
+  //   if (!isTypeScriptVersion(version)) {
+  //     throw new Error(`There is an entry named ${name}, but ${version} is not a valid TypeScript version.`)
+  //   }
+  //   if (!TypeScriptVersion.isRedirectable(version)) {
+  //     throw new Error(`At ${dirPath}/${name}: TypeScript version directories only available starting with ts3.1.`)
+  //   }
+  //   return version
+  // })
+  const minVersionFromComment = getTypeScriptVersionFromComment(indexText)
+  const availableVersions: Array<TypeScriptVersion> = ['3.0', '3.1', '3.2', '3.3']
+  let index = minVersionFromComment === undefined ? 0 : availableVersions.findIndex(v => v === minVersionFromComment)
+  if (index === -1) {
+    throw new Error('Invalid min version: ' + minVersionFromComment)
+  }
+  const typesVersions = availableVersions.slice(index)
+  console.log('Running type-level tests for the following versions: ' + JSON.stringify(typesVersions))
 
   if (dt) {
     await checkPackageJson(dirPath, typesVersions)
@@ -140,25 +147,37 @@ async function runTests(dirPath: string, onlyTestTsNext: boolean): Promise<void>
       )
     }
   } else {
-    await testTypesVersion(dirPath, undefined, getTsVersion(0), isOlderVersion, dt, indexText)
-    for (let i = 0; i < typesVersions.length; i++) {
-      const version = typesVersions[i]
-      const versionPath = joinPaths(dirPath, `ts${version}`)
-      const versionIndexText = await readFile(joinPaths(versionPath, 'index.d.ts'), 'utf-8')
-      await testTypesVersion(
-        versionPath,
-        version,
-        getTsVersion(i + 1),
-        isOlderVersion,
-        dt,
-        versionIndexText,
-        /*inTypesVersionDirectory*/ true
-      )
-    }
+    const version = typesVersions[0]
+    const versionPath = joinPaths(dirPath, `ts${version}`)
+    const versionIndexText = await readFile(joinPaths(versionPath, 'index.d.ts'), 'utf-8')
+    await testTypesVersion(
+      versionPath,
+      version,
+      typesVersions[typesVersions.length - 1],
+      isOlderVersion,
+      dt,
+      versionIndexText,
+      /*inTypesVersionDirectory*/ true
+    )
+    // await testTypesVersion(dirPath, undefined, getTsVersion(0), isOlderVersion, dt, indexText)
+    // for (let i = 0; i < typesVersions.length; i++) {
+    //   const version = typesVersions[i]
+    //   const versionPath = joinPaths(dirPath, `ts${version}`)
+    //   const versionIndexText = await readFile(joinPaths(versionPath, 'index.d.ts'), 'utf-8')
+    //   await testTypesVersion(
+    //     versionPath,
+    //     version,
+    //     getTsVersion(i + 1),
+    //     isOlderVersion,
+    //     dt,
+    //     versionIndexText,
+    //     /*inTypesVersionDirectory*/ true
+    //   )
+    // }
 
-    function getTsVersion(i: number): TsVersion {
-      return i === typesVersions.length ? 'next' : assertDefined(TypeScriptVersion.previous(typesVersions[i]))
-    }
+    // function getTsVersion(i: number): TsVersion {
+    //   return i === typesVersions.length ? 'next' : assertDefined(TypeScriptVersion.previous(typesVersions[i]))
+    // }
   }
 }
 
