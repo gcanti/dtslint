@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
-const definitelytyped_header_parser_1 = require("definitelytyped-header-parser");
+const definitelytyped_header_parser_1 = require("./definitelytyped-header-parser");
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
 const tslint_1 = require("tslint");

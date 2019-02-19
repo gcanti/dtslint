@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { parseTypeScriptVersionLine, TypeScriptVersion } from 'definitelytyped-header-parser'
+import { parseTypeScriptVersionLine, TypeScriptVersion } from './definitelytyped-header-parser'
 import { readFile } from 'fs-extra'
 import { basename, dirname, join as joinPaths } from 'path'
 import { checkPackageJson, checkTsconfig } from './checks'

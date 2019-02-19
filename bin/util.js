@@ -15,7 +15,7 @@ const stripJsonComments = require("strip-json-comments");
 const ts = require("typescript");
 function readJson(path) {
     return __awaiter(this, void 0, void 0, function* () {
-        const text = yield fs_extra_1.readFile(path, "utf-8");
+        const text = yield fs_extra_1.readFile(path, 'utf-8');
         return JSON.parse(stripJsonComments(text));
     });
 }
@@ -26,7 +26,7 @@ function failure(ruleName, s) {
 exports.failure = failure;
 function getCommonDirectoryName(files) {
     let minLen = 999;
-    let minDir = "";
+    let minDir = '';
     for (const file of files) {
         const dir = path_1.dirname(file);
         if (dir.length < minLen) {
@@ -66,7 +66,7 @@ function getModuleDeclarationStatements(node) {
 exports.getModuleDeclarationStatements = getModuleDeclarationStatements;
 function getCompilerOptions(dirPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        const tsconfigPath = path_1.join(dirPath, "tsconfig.json");
+        const tsconfigPath = path_1.join(dirPath, 'tsconfig.json');
         if (!(yield fs_extra_1.pathExists(tsconfigPath))) {
             throw new Error(`Need a 'tsconfig.json' file in ${dirPath}`);
         }

@@ -1,5 +1,5 @@
 import { exec } from 'child_process'
-import { TypeScriptVersion } from 'definitelytyped-header-parser'
+import { TypeScriptVersion } from './definitelytyped-header-parser'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import { TsVersion } from './lint'

@@ -25,8 +25,8 @@
     "push-production": "npm run build && git checkout production && git merge master && npm run build && git add bin/* && git commit -m 'Update bin/' && git push -u origin production"
   },
   "dependencies": {
-    "definitelytyped-header-parser": "github:Microsoft/definitelytyped-header-parser#production",
     "fs-extra": "^6.0.1",
+    "parsimmon": "^1.12.0",
     "strip-json-comments": "^2.0.1",
     "tslint": "^5.12.0",
     "typescript": "next"

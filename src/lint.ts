@@ -1,5 +1,5 @@
 import assert = require('assert')
-import { TypeScriptVersion } from 'definitelytyped-header-parser'
+import { TypeScriptVersion } from './definitelytyped-header-parser'
 import { pathExists } from 'fs-extra'
 import { join as joinPaths, normalize } from 'path'
 import { Configuration, ILinterOptions, Linter } from 'tslint'

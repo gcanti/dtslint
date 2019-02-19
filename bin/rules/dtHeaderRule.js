@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const definitelytyped_header_parser_1 = require("definitelytyped-header-parser");
+const definitelytyped_header_parser_1 = require("../definitelytyped-header-parser");
 const path_1 = require("path");
 const Lint = require("tslint");
 const util_1 = require("../util");
@@ -10,12 +10,12 @@ class Rule extends Lint.Rules.AbstractRule {
     }
 }
 Rule.metadata = {
-    ruleName: "dt-header",
-    description: "Ensure consistency of DefinitelyTyped headers.",
-    optionsDescription: "Not configurable.",
+    ruleName: 'dt-header',
+    description: 'Ensure consistency of DefinitelyTyped headers.',
+    optionsDescription: 'Not configurable.',
     options: null,
-    type: "functionality",
-    typescriptOnly: true,
+    type: 'functionality',
+    typescriptOnly: true
 };
 exports.Rule = Rule;
 function walk(ctx) {
@@ -28,8 +28,8 @@ function walk(ctx) {
                 ctx.addFailureAt(idx, search.length, util_1.failure(Rule.metadata.ruleName, explanation));
             }
         };
-        lookFor("// Type definitions for", "Header should only be in `index.d.ts` of the root.");
-        lookFor("// TypeScript Version", "TypeScript version should be specified under header in `index.d.ts`.");
+        lookFor('// Type definitions for', 'Header should only be in `index.d.ts` of the root.');
+        lookFor('// TypeScript Version', 'TypeScript version should be specified under header in `index.d.ts`.');
         return;
     }
     const error = definitelytyped_header_parser_1.validate(text);
@@ -40,10 +40,10 @@ function walk(ctx) {
 }
 function isMainFile(fileName) {
     // Linter may be run with cwd of the package. We want `index.d.ts` but not `submodule/index.d.ts` to match.
-    if (fileName === "index.d.ts") {
+    if (fileName === 'index.d.ts') {
         return true;
     }
-    if (path_1.basename(fileName) !== "index.d.ts") {
+    if (path_1.basename(fileName) !== 'index.d.ts') {
         return false;
     }
     let parent = path_1.dirname(fileName);
@@ -53,6 +53,6 @@ function isMainFile(fileName) {
         parent = path_1.dirname(parent);
     }
     // Allow "types/foo/index.d.ts", not "types/foo/utils/index.d.ts"
-    return path_1.basename(path_1.dirname(parent)) === "types";
+    return path_1.basename(path_1.dirname(parent)) === 'types';
 }
 //# sourceMappingURL=dtHeaderRule.js.map
