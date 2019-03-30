@@ -13,7 +13,7 @@ class Rule extends Lint.Rules.TypedRule {
     applyWithProgram(sourceFile, lintProgram) {
         const options = this.ruleArguments[0];
         if (!options) {
-            return this.applyWithFunction(sourceFile, ctx => walk(ctx, lintProgram, TsType, "next", /*nextHigherVersion*/ undefined));
+            return this.applyWithFunction(sourceFile, ctx => walk(ctx, lintProgram, TsType, 'next', /*nextHigherVersion*/ undefined));
         }
         const { tsconfigPath, versionsToTest } = options;
         const getFailures = ({ versionName, path }, nextHigherVersion) => {
@@ -44,18 +44,18 @@ class Rule extends Lint.Rules.TypedRule {
 }
 /* tslint:disable:object-literal-sort-keys */
 Rule.metadata = {
-    ruleName: "expect",
-    description: "Asserts types with $ExpectType and presence of errors with $ExpectError.",
-    optionsDescription: "Not configurable.",
+    ruleName: 'expect',
+    description: 'Asserts types with $ExpectType and presence of errors with $ExpectError.',
+    optionsDescription: 'Not configurable.',
     options: null,
-    type: "functionality",
+    type: 'functionality',
     typescriptOnly: true,
-    requiresTypeInfo: true,
+    requiresTypeInfo: true
 };
 /* tslint:enable:object-literal-sort-keys */
-Rule.FAILURE_STRING_DUPLICATE_ASSERTION = "This line has 2 $ExpectType assertions.";
-Rule.FAILURE_STRING_ASSERTION_MISSING_NODE = "Can not match a node to this assertion.";
-Rule.FAILURE_STRING_EXPECTED_ERROR = "Expected an error on this line, but found none.";
+Rule.FAILURE_STRING_DUPLICATE_ASSERTION = 'This line has 2 $ExpectType assertions.';
+Rule.FAILURE_STRING_ASSERTION_MISSING_NODE = 'Can not match a node to this assertion.';
+Rule.FAILURE_STRING_EXPECTED_ERROR = 'Expected an error on this line, but found none.';
 exports.Rule = Rule;
 const programCache = new WeakMap();
 /** Maps a tslint Program to one created with the version specified in `options`. */
@@ -79,8 +79,8 @@ function createProgram(configFile, ts) {
     const parseConfigHost = {
         fileExists: fs_1.existsSync,
         readDirectory: ts.sys.readDirectory,
-        readFile: file => fs_1.readFileSync(file, "utf8"),
-        useCaseSensitiveFileNames: true,
+        readFile: file => fs_1.readFileSync(file, 'utf8'),
+        useCaseSensitiveFileNames: true
     };
     const parsed = ts.parseJsonConfigFileContent(config, parseConfigHost, path_1.resolve(projectDirectory), { noEmit: true });
     const host = ts.createCompilerHost(parsed.options, true);
@@ -131,7 +131,7 @@ function walk(ctx, program, ts, versionName, nextHigherVersion) {
     function addDiagnosticFailure(diagnostic) {
         const intro = getIntro();
         if (diagnostic.file === sourceFile) {
-            const msg = `${intro}\n${ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")}`;
+            const msg = `${intro}\n${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`;
             ctx.addFailureAt(diagnostic.start, diagnostic.length, msg);
         }
         else {
@@ -144,16 +144,16 @@ function walk(ctx, program, ts, versionName, nextHigherVersion) {
         }
         else {
             const msg = `Compile error in typescript@${versionName} but not in typescript@${nextHigherVersion}.\n`;
-            const explain = nextHigherVersion === "next"
-                ? "TypeScript@next features not yet supported."
+            const explain = nextHigherVersion === 'next'
+                ? 'TypeScript@next features not yet supported.'
                 : `Fix with a comment '// TypeScript Version: ${nextHigherVersion}' just under the header.`;
             return msg + explain;
         }
     }
     function addFailureAtLine(line, failure) {
         const start = sourceFile.getPositionOfLineAndCharacter(line, 0);
-        let end = start + sourceFile.text.split("\n")[line].length;
-        if (sourceFile.text[end - 1] === "\r") {
+        let end = start + sourceFile.text.split('\n')[line].length;
+        if (sourceFile.text[end - 1] === '\r') {
             end--;
         }
         ctx.addFailure(start, end, `TypeScript@${versionName}: ${failure}`);
@@ -179,7 +179,7 @@ function parseAssertions(sourceFile) {
             continue;
         }
         const line = getLine(commentMatch.index);
-        if (match[1] === "Error") {
+        if (match[1] === 'Error') {
             if (errorLines.has(line)) {
                 duplicates.push(line);
             }
@@ -209,9 +209,51 @@ function parseAssertions(sourceFile) {
 }
 function isFirstOnLine(text, lineStart, pos) {
     for (let i = lineStart; i < pos; i++) {
-        if (text[i] !== " ") {
+        if (text[i] !== ' ') {
             return false;
         }
+    }
+    return true;
+}
+function matchReadonlyArray(actual, expected) {
+    if (!(/\breadonly\b/.test(actual) && /\bReadonlyArray\b/.test(expected)))
+        return false;
+    const readonlyArrayRegExp = /\bReadonlyArray</y;
+    const readonlyModifierRegExp = /\breadonly /y;
+    // A<ReadonlyArray<B<ReadonlyArray<C>>>>
+    // A<readonly B<readonly C[]>[]>
+    let expectedPos = 0;
+    let actualPos = 0;
+    let depth = 0;
+    while (expectedPos < expected.length && actualPos < actual.length) {
+        const expectedChar = expected.charAt(expectedPos);
+        const actualChar = actual.charAt(actualPos);
+        if (expectedChar === actualChar) {
+            expectedPos++;
+            actualPos++;
+            continue;
+        }
+        // check for end of readonly array
+        if (depth > 0 &&
+            expectedChar === '>' &&
+            actualChar === '[' &&
+            actualPos < actual.length - 1 &&
+            actual.charAt(actualPos + 1) === ']') {
+            depth--;
+            expectedPos++;
+            actualPos += 2;
+            continue;
+        }
+        // check for start of readonly array
+        readonlyArrayRegExp.lastIndex = expectedPos;
+        readonlyModifierRegExp.lastIndex = actualPos;
+        if (readonlyArrayRegExp.test(expected) && readonlyModifierRegExp.test(actual)) {
+            depth++;
+            expectedPos += 14; // "ReadonlyArray<".length;
+            actualPos += 9; // "readonly ".length;
+            continue;
+        }
+        return false;
     }
     return true;
 }
@@ -230,8 +272,8 @@ function getExpectTypeFailures(sourceFile, typeAssertions, checker, ts) {
             const type = checker.getTypeAtLocation(getNodeForExpectType(node, ts));
             const actual = type
                 ? checker.typeToString(type, /*enclosingDeclaration*/ undefined, ts.TypeFormatFlags.NoTruncation)
-                : "";
-            if (actual !== expected) {
+                : '';
+            if (actual !== expected && !matchReadonlyArray(actual, expected)) {
                 unmetExpectations.push({ node, expected, actual });
             }
             typeAssertions.delete(line);
@@ -241,7 +283,8 @@ function getExpectTypeFailures(sourceFile, typeAssertions, checker, ts) {
     return { unmetExpectations, unusedAssertions: typeAssertions.keys() };
 }
 function getNodeForExpectType(node, ts) {
-    if (node.kind === ts.SyntaxKind.VariableStatement) { // ts2.0 doesn't have `isVariableStatement`
+    if (node.kind === ts.SyntaxKind.VariableStatement) {
+        // ts2.0 doesn't have `isVariableStatement`
         const { declarationList: { declarations } } = node;
         if (declarations.length === 1) {
             const { initializer } = declarations[0];
