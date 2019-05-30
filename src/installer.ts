@@ -6,7 +6,7 @@ import { TsVersion } from './lint'
 
 const installsDir = path.join(__dirname, '..', 'typescript-installs')
 
-export const availableVersions: Array<TypeScriptVersion> = ['3.0', '3.1', '3.2', '3.3', '3.4']
+export const availableVersions: Array<TypeScriptVersion> = ['3.0', '3.1', '3.2', '3.3', '3.4', '3.5']
 
 export async function installAll() {
   for (const v of availableVersions) {

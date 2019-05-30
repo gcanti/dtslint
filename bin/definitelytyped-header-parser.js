@@ -20,7 +20,8 @@ var TypeScriptVersion;
         '3.2',
         '3.3',
         '3.4',
-        '3.5'
+        '3.5',
+        '3.6'
     ];
     TypeScriptVersion.lowest = TypeScriptVersion.all[0];
     /** Latest version that may be specified in a `// TypeScript Version:` header. */
@@ -201,7 +202,7 @@ function parseLabel(strict) {
             }
             if (v !== undefined && strict) {
                 // tslint:disable-line strict-type-predicates
-                return fail("'v' not allowed");
+                return fail(`'v' not allowed`);
             }
         }
         else {
