@@ -21,7 +21,8 @@ var TypeScriptVersion;
         '3.3',
         '3.4',
         '3.5',
-        '3.6'
+        '3.6',
+        '3.7'
     ];
     TypeScriptVersion.lowest = TypeScriptVersion.all[0];
     /** Latest version that may be specified in a `// TypeScript Version:` header. */
