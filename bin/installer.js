@@ -12,7 +12,7 @@ const child_process_1 = require("child_process");
 const fs = require("fs-extra");
 const path = require("path");
 const installsDir = path.join(__dirname, '..', 'typescript-installs');
-exports.availableVersions = ['3.5', '3.6', '3.7', '3.8'];
+exports.availableVersions = ['3.5', '3.6', '3.7', '3.8', '3.9'];
 function installAll() {
     return __awaiter(this, void 0, void 0, function* () {
         for (const v of exports.availableVersions) {
