@@ -25,6 +25,7 @@
     "push-production": "npm run build && git checkout production && git merge master && npm run build && git add bin/* && git commit -m 'Update bin/' && git push -u origin production"
   },
   "dependencies": {
+    "@types/fs-extra": "^5.0.2",
     "fs-extra": "^6.0.1",
     "parsimmon": "^1.12.0",
     "strip-json-comments": "^2.0.1",
@@ -32,7 +33,6 @@
     "typescript": "next"
   },
   "devDependencies": {
-    "@types/fs-extra": "^5.0.2",
     "@types/mz": "0.0.30",
     "@types/node": "^7.0.5",
     "@types/parsimmon": "^1.0.3",
