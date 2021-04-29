@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseTypeScriptVersionLine = exports.renderExpected = exports.validate = exports.parseHeaderOrFail = exports.makeTypesVersionsForPackageJson = exports.isTypeScriptVersion = exports.TypeScriptVersion = void 0;
 const assert = require("assert");
 const pm = require("parsimmon");
 var TypeScriptVersion;

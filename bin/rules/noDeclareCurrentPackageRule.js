@@ -1,25 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.TypedRule {
-    applyWithProgram(sourceFile, program) {
-        if (!sourceFile.isDeclarationFile) {
-            return [];
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.TypedRule {
+        applyWithProgram(sourceFile, program) {
+            if (!sourceFile.isDeclarationFile) {
+                return [];
+            }
+            const packageName = util_1.getCommonDirectoryName(program.getRootFileNames());
+            return this.applyWithFunction(sourceFile, ctx => walk(ctx, packageName));
         }
-        const packageName = util_1.getCommonDirectoryName(program.getRootFileNames());
-        return this.applyWithFunction(sourceFile, ctx => walk(ctx, packageName));
     }
-}
-Rule.metadata = {
-    ruleName: "no-declare-current-package",
-    description: "Don't use an ambient module declaration of the current package; use an external module.",
-    optionsDescription: "Not configurable.",
-    options: null,
-    type: "functionality",
-    typescriptOnly: true,
-};
+    Rule.metadata = {
+        ruleName: "no-declare-current-package",
+        description: "Don't use an ambient module declaration of the current package; use an external module.",
+        optionsDescription: "Not configurable.",
+        options: null,
+        type: "functionality",
+        typescriptOnly: true,
+    };
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx, packageName) {
     for (const statement of ctx.sourceFile.statements) {

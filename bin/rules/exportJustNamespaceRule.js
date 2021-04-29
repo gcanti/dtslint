@@ -1,22 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.AbstractRule {
-    apply(sourceFile) {
-        return this.applyWithFunction(sourceFile, walk);
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.AbstractRule {
+        apply(sourceFile) {
+            return this.applyWithFunction(sourceFile, walk);
+        }
     }
-}
-Rule.metadata = {
-    ruleName: "export-just-namespace",
-    description: "Forbid to `export = foo` where `foo` is a namespace and isn't merged with a function/class/type/interface.",
-    optionsDescription: "Not configurable.",
-    options: null,
-    type: "functionality",
-    typescriptOnly: true,
-};
-Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "Instead of `export =`-ing a namespace, use the body of the namespace as the module body.");
+    Rule.metadata = {
+        ruleName: "export-just-namespace",
+        description: "Forbid to `export = foo` where `foo` is a namespace and isn't merged with a function/class/type/interface.",
+        optionsDescription: "Not configurable.",
+        options: null,
+        type: "functionality",
+        typescriptOnly: true,
+    };
+    Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "Instead of `export =`-ing a namespace, use the body of the namespace as the module body.");
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile: { statements } } = ctx;

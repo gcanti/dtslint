@@ -1,27 +1,31 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.TypedRule {
-    static FAILURE_STRING(typeParameter) {
-        return util_1.failure(Rule.metadata.ruleName, `Type parameter ${typeParameter} is used only once.`);
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.TypedRule {
+        static FAILURE_STRING(typeParameter) {
+            return util_1.failure(Rule.metadata.ruleName, `Type parameter ${typeParameter} is used only once.`);
+        }
+        static FAILURE_STRING_NEVER(typeParameter) {
+            return util_1.failure(Rule.metadata.ruleName, `Type parameter ${typeParameter} is never used.`);
+        }
+        applyWithProgram(sourceFile, program) {
+            return this.applyWithFunction(sourceFile, ctx => walk(ctx, program.getTypeChecker()));
+        }
     }
-    static FAILURE_STRING_NEVER(typeParameter) {
-        return util_1.failure(Rule.metadata.ruleName, `Type parameter ${typeParameter} is never used.`);
-    }
-    applyWithProgram(sourceFile, program) {
-        return this.applyWithFunction(sourceFile, ctx => walk(ctx, program.getTypeChecker()));
-    }
-}
-Rule.metadata = {
-    ruleName: "no-unnecessary-generics",
-    description: "Forbids signatures using a generic parameter only once.",
-    optionsDescription: "Not configurable.",
-    options: null,
-    type: "style",
-    typescriptOnly: true,
-};
+    Rule.metadata = {
+        ruleName: "no-unnecessary-generics",
+        description: "Forbids signatures using a generic parameter only once.",
+        optionsDescription: "Not configurable.",
+        options: null,
+        type: "style",
+        typescriptOnly: true,
+    };
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx, checker) {
     const { sourceFile } = ctx;

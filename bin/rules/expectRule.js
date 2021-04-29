@@ -1,61 +1,65 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getProgram = exports.Rule = void 0;
 const fs_1 = require("fs");
 const path_1 = require("path");
 const Lint = require("tslint");
 const TsType = require("typescript");
 const util_1 = require("../util");
 // Based on https://github.com/danvk/typings-checker
-class Rule extends Lint.Rules.TypedRule {
-    static FAILURE_STRING(expectedType, actualType) {
-        return `Expected type to be:\n  ${expectedType}\ngot:\n  ${actualType}`;
-    }
-    applyWithProgram(sourceFile, lintProgram) {
-        const options = this.ruleArguments[0];
-        if (!options) {
-            return this.applyWithFunction(sourceFile, ctx => walk(ctx, lintProgram, TsType, 'next', /*nextHigherVersion*/ undefined));
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.TypedRule {
+        static FAILURE_STRING(expectedType, actualType) {
+            return `Expected type to be:\n  ${expectedType}\ngot:\n  ${actualType}`;
         }
-        const { tsconfigPath, versionsToTest } = options;
-        const getFailures = ({ versionName, path }, nextHigherVersion) => {
-            const ts = require(path);
-            const program = getProgram(tsconfigPath, ts, versionName, lintProgram);
-            return this.applyWithFunction(sourceFile, ctx => walk(ctx, program, ts, versionName, nextHigherVersion));
-        };
-        const maxFailures = getFailures(util_1.last(versionsToTest), undefined);
-        if (maxFailures.length) {
-            return maxFailures;
-        }
-        // As an optimization, check the earliest version for errors;
-        // assume that if it works on min and max, it works for everything in between.
-        const minFailures = getFailures(versionsToTest[0], undefined);
-        if (!minFailures.length) {
-            return [];
-        }
-        // There are no failures in the max version, but there are failures in the min version.
-        // Work backward to find the newest version with failures.
-        for (let i = versionsToTest.length - 2; i >= 0; i--) {
-            const failures = getFailures(versionsToTest[i], options.versionsToTest[i + 1].versionName);
-            if (failures.length) {
-                return failures;
+        applyWithProgram(sourceFile, lintProgram) {
+            const options = this.ruleArguments[0];
+            if (!options) {
+                return this.applyWithFunction(sourceFile, ctx => walk(ctx, lintProgram, TsType, 'next', /*nextHigherVersion*/ undefined));
             }
+            const { tsconfigPath, versionsToTest } = options;
+            const getFailures = ({ versionName, path }, nextHigherVersion) => {
+                const ts = require(path);
+                const program = getProgram(tsconfigPath, ts, versionName, lintProgram);
+                return this.applyWithFunction(sourceFile, ctx => walk(ctx, program, ts, versionName, nextHigherVersion));
+            };
+            const maxFailures = getFailures(util_1.last(versionsToTest), undefined);
+            if (maxFailures.length) {
+                return maxFailures;
+            }
+            // As an optimization, check the earliest version for errors;
+            // assume that if it works on min and max, it works for everything in between.
+            const minFailures = getFailures(versionsToTest[0], undefined);
+            if (!minFailures.length) {
+                return [];
+            }
+            // There are no failures in the max version, but there are failures in the min version.
+            // Work backward to find the newest version with failures.
+            for (let i = versionsToTest.length - 2; i >= 0; i--) {
+                const failures = getFailures(versionsToTest[i], options.versionsToTest[i + 1].versionName);
+                if (failures.length) {
+                    return failures;
+                }
+            }
+            throw new Error(); // unreachable -- at least the min version should have failures.
         }
-        throw new Error(); // unreachable -- at least the min version should have failures.
     }
-}
-/* tslint:disable:object-literal-sort-keys */
-Rule.metadata = {
-    ruleName: 'expect',
-    description: 'Asserts types with $ExpectType and presence of errors with $ExpectError.',
-    optionsDescription: 'Not configurable.',
-    options: null,
-    type: 'functionality',
-    typescriptOnly: true,
-    requiresTypeInfo: true
-};
-/* tslint:enable:object-literal-sort-keys */
-Rule.FAILURE_STRING_DUPLICATE_ASSERTION = 'This line has 2 $ExpectType assertions.';
-Rule.FAILURE_STRING_ASSERTION_MISSING_NODE = 'Can not match a node to this assertion.';
-Rule.FAILURE_STRING_EXPECTED_ERROR = 'Expected an error on this line, but found none.';
+    /* tslint:disable:object-literal-sort-keys */
+    Rule.metadata = {
+        ruleName: 'expect',
+        description: 'Asserts types with $ExpectType and presence of errors with $ExpectError.',
+        optionsDescription: 'Not configurable.',
+        options: null,
+        type: 'functionality',
+        typescriptOnly: true,
+        requiresTypeInfo: true
+    };
+    /* tslint:enable:object-literal-sort-keys */
+    Rule.FAILURE_STRING_DUPLICATE_ASSERTION = 'This line has 2 $ExpectType assertions.';
+    Rule.FAILURE_STRING_ASSERTION_MISSING_NODE = 'Can not match a node to this assertion.';
+    Rule.FAILURE_STRING_EXPECTED_ERROR = 'Expected an error on this line, but found none.';
+    return Rule;
+})();
 exports.Rule = Rule;
 const programCache = new WeakMap();
 /** Maps a tslint Program to one created with the version specified in `options`. */

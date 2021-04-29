@@ -1,34 +1,38 @@
 "use strict";
 // Fixes temporarily moved here until they are published by tslint.
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const assert = require("assert");
 const Lint = require("tslint");
 const tsutils_1 = require("tsutils"); // tslint:disable-line no-implicit-dependencies (from tslint)
 const ts = require("typescript");
-class Rule extends Lint.Rules.AbstractRule {
-    static FAILURE_STRING_REDUNDANT_TAG(tagName) {
-        return `JSDoc tag '@${tagName}' is redundant in TypeScript code.`;
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.AbstractRule {
+        static FAILURE_STRING_REDUNDANT_TAG(tagName) {
+            return `JSDoc tag '@${tagName}' is redundant in TypeScript code.`;
+        }
+        static FAILURE_STRING_NO_COMMENT(tagName) {
+            return `'@${tagName}' is redundant in TypeScript code if it has no description.`;
+        }
+        apply(sourceFile) {
+            return this.applyWithFunction(sourceFile, walk);
+        }
     }
-    static FAILURE_STRING_NO_COMMENT(tagName) {
-        return `'@${tagName}' is redundant in TypeScript code if it has no description.`;
-    }
-    apply(sourceFile) {
-        return this.applyWithFunction(sourceFile, walk);
-    }
-}
-/* tslint:disable:object-literal-sort-keys */
-Rule.metadata = {
-    ruleName: "no-redundant-jsdoc",
-    description: "Forbids JSDoc which duplicates TypeScript functionality.",
-    optionsDescription: "Not configurable.",
-    options: null,
-    optionExamples: [true],
-    type: "style",
-    typescriptOnly: true,
-};
-/* tslint:enable:object-literal-sort-keys */
-Rule.FAILURE_STRING_REDUNDANT_TYPE = "Type annotation in JSDoc is redundant in TypeScript code.";
-Rule.FAILURE_STRING_EMPTY = "JSDoc comment is empty.";
+    /* tslint:disable:object-literal-sort-keys */
+    Rule.metadata = {
+        ruleName: "no-redundant-jsdoc",
+        description: "Forbids JSDoc which duplicates TypeScript functionality.",
+        optionsDescription: "Not configurable.",
+        options: null,
+        optionExamples: [true],
+        type: "style",
+        typescriptOnly: true,
+    };
+    /* tslint:enable:object-literal-sort-keys */
+    Rule.FAILURE_STRING_REDUNDANT_TYPE = "Type annotation in JSDoc is redundant in TypeScript code.";
+    Rule.FAILURE_STRING_EMPTY = "JSDoc comment is empty.";
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile } = ctx;

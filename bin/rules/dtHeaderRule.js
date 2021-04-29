@@ -1,22 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const definitelytyped_header_parser_1 = require("../definitelytyped-header-parser");
 const path_1 = require("path");
 const Lint = require("tslint");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.AbstractRule {
-    apply(sourceFile) {
-        return this.applyWithFunction(sourceFile, walk);
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.AbstractRule {
+        apply(sourceFile) {
+            return this.applyWithFunction(sourceFile, walk);
+        }
     }
-}
-Rule.metadata = {
-    ruleName: 'dt-header',
-    description: 'Ensure consistency of DefinitelyTyped headers.',
-    optionsDescription: 'Not configurable.',
-    options: null,
-    type: 'functionality',
-    typescriptOnly: true
-};
+    Rule.metadata = {
+        ruleName: 'dt-header',
+        description: 'Ensure consistency of DefinitelyTyped headers.',
+        optionsDescription: 'Not configurable.',
+        options: null,
+        type: 'functionality',
+        typescriptOnly: true
+    };
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile } = ctx;

@@ -1,21 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.AbstractRule {
-    apply(sourceFile) {
-        return this.applyWithFunction(sourceFile, walk);
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.AbstractRule {
+        apply(sourceFile) {
+            return this.applyWithFunction(sourceFile, walk);
+        }
     }
-}
-Rule.metadata = {
-    ruleName: "no-redundant-undefined",
-    description: "Forbids optional parameters/properties to include an explicit `undefined` in their type.",
-    optionsDescription: "Not configurable.",
-    options: null,
-    type: "style",
-    typescriptOnly: true,
-};
+    Rule.metadata = {
+        ruleName: "no-redundant-undefined",
+        description: "Forbids optional parameters/properties to include an explicit `undefined` in their type.",
+        optionsDescription: "Not configurable.",
+        options: null,
+        type: "style",
+        typescriptOnly: true,
+    };
+    return Rule;
+})();
 exports.Rule = Rule;
 function failureString(container) {
     const desc = container.kind === ts.SyntaxKind.Parameter ? "Parameter" : "Property";

@@ -1,23 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.AbstractRule {
-    apply(sourceFile) {
-        return this.applyWithFunction(sourceFile, walk);
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.AbstractRule {
+        apply(sourceFile) {
+            return this.applyWithFunction(sourceFile, walk);
+        }
     }
-}
-Rule.metadata = {
-    ruleName: "void-return",
-    description: "`void` may only be used as a return type.",
-    rationale: "style",
-    optionsDescription: "Not configurable.",
-    options: null,
-    type: "style",
-    typescriptOnly: true,
-};
-Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "Use the `void` type for return types only. Otherwise, use `undefined`.");
+    Rule.metadata = {
+        ruleName: "void-return",
+        description: "`void` may only be used as a return type.",
+        rationale: "style",
+        optionsDescription: "Not configurable.",
+        options: null,
+        type: "style",
+        typescriptOnly: true,
+    };
+    Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "Use the `void` type for return types only. Otherwise, use `undefined`.");
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx) {
     ctx.sourceFile.forEachChild(function cb(node) {

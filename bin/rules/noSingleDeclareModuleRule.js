@@ -1,23 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.AbstractRule {
-    apply(sourceFile) {
-        return this.applyWithFunction(sourceFile, walk);
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.AbstractRule {
+        apply(sourceFile) {
+            return this.applyWithFunction(sourceFile, walk);
+        }
     }
-}
-Rule.metadata = {
-    ruleName: "no-single-declare-module",
-    description: "Don't use an ambient module declaration if you can use an external module file.",
-    rationale: "Cuts down on nesting",
-    optionsDescription: "Not configurable.",
-    options: null,
-    type: "style",
-    typescriptOnly: true,
-};
-Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "File has only 1 module declaration — write it as an external module.");
+    Rule.metadata = {
+        ruleName: "no-single-declare-module",
+        description: "Don't use an ambient module declaration if you can use an external module file.",
+        rationale: "Cuts down on nesting",
+        optionsDescription: "Not configurable.",
+        options: null,
+        type: "style",
+        typescriptOnly: true,
+    };
+    Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "File has only 1 module declaration — write it as an external module.");
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile } = ctx;

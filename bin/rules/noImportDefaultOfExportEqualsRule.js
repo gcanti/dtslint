@@ -1,24 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
-class Rule extends Lint.Rules.TypedRule {
-    static FAILURE_STRING(importName, moduleName) {
-        return util_1.failure(Rule.metadata.ruleName, `The module ${moduleName} uses \`export = \`. Import with \`import ${importName} = require(${moduleName})\`.`);
+let Rule = /** @class */ (() => {
+    class Rule extends Lint.Rules.TypedRule {
+        static FAILURE_STRING(importName, moduleName) {
+            return util_1.failure(Rule.metadata.ruleName, `The module ${moduleName} uses \`export = \`. Import with \`import ${importName} = require(${moduleName})\`.`);
+        }
+        applyWithProgram(sourceFile, program) {
+            return this.applyWithFunction(sourceFile, ctx => walk(ctx, program.getTypeChecker()));
+        }
     }
-    applyWithProgram(sourceFile, program) {
-        return this.applyWithFunction(sourceFile, ctx => walk(ctx, program.getTypeChecker()));
-    }
-}
-Rule.metadata = {
-    ruleName: "no-import-default-of-export-equals",
-    description: "Forbid a default import to reference an `export =` module.",
-    optionsDescription: "Not configurable.",
-    options: null,
-    type: "functionality",
-    typescriptOnly: true,
-};
+    Rule.metadata = {
+        ruleName: "no-import-default-of-export-equals",
+        description: "Forbid a default import to reference an `export =` module.",
+        optionsDescription: "Not configurable.",
+        options: null,
+        type: "functionality",
+        typescriptOnly: true,
+    };
+    return Rule;
+})();
 exports.Rule = Rule;
 function walk(ctx, checker) {
     util_1.eachModuleStatement(ctx.sourceFile, statement => {
