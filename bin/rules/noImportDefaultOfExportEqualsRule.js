@@ -1,16 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
 class Rule extends Lint.Rules.TypedRule {
     static FAILURE_STRING(importName, moduleName) {
-        return util_1.failure(Rule.metadata.ruleName, `The module ${moduleName} uses \`export = \`. Import with \`import ${importName} = require(${moduleName})\`.`);
+        return (0, util_1.failure)(Rule.metadata.ruleName, `The module ${moduleName} uses \`export = \`. Import with \`import ${importName} = require(${moduleName})\`.`);
     }
     applyWithProgram(sourceFile, program) {
         return this.applyWithFunction(sourceFile, ctx => walk(ctx, program.getTypeChecker()));
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "no-import-default-of-export-equals",
     description: "Forbid a default import to reference an `export =` module.",
@@ -19,9 +21,8 @@ Rule.metadata = {
     type: "functionality",
     typescriptOnly: true,
 };
-exports.Rule = Rule;
 function walk(ctx, checker) {
-    util_1.eachModuleStatement(ctx.sourceFile, statement => {
+    (0, util_1.eachModuleStatement)(ctx.sourceFile, statement => {
         if (!ts.isImportDeclaration(statement)) {
             return;
         }
@@ -40,7 +41,7 @@ function walk(ctx, checker) {
 }
 function getStatements(decl) {
     return ts.isSourceFile(decl) ? decl.statements
-        : ts.isModuleDeclaration(decl) ? util_1.getModuleDeclarationStatements(decl)
+        : ts.isModuleDeclaration(decl) ? (0, util_1.getModuleDeclarationStatements)(decl)
             : undefined;
 }
 //# sourceMappingURL=noImportDefaultOfExportEqualsRule.js.map

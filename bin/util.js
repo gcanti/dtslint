@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mapDefinedAsync = exports.assertDefined = exports.last = exports.withoutPrefix = exports.getCompilerOptions = exports.getModuleDeclarationStatements = exports.eachModuleStatement = exports.getCommonDirectoryName = exports.failure = exports.readJson = void 0;
 const assert = require("assert");
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
@@ -15,7 +17,7 @@ const stripJsonComments = require("strip-json-comments");
 const ts = require("typescript");
 function readJson(path) {
     return __awaiter(this, void 0, void 0, function* () {
-        const text = yield fs_extra_1.readFile(path, 'utf-8');
+        const text = yield (0, fs_extra_1.readFile)(path, 'utf-8');
         return JSON.parse(stripJsonComments(text));
     });
 }
@@ -28,13 +30,13 @@ function getCommonDirectoryName(files) {
     let minLen = 999;
     let minDir = '';
     for (const file of files) {
-        const dir = path_1.dirname(file);
+        const dir = (0, path_1.dirname)(file);
         if (dir.length < minLen) {
             minDir = dir;
             minLen = dir.length;
         }
     }
-    return path_1.basename(minDir);
+    return (0, path_1.basename)(minDir);
 }
 exports.getCommonDirectoryName = getCommonDirectoryName;
 function eachModuleStatement(sourceFile, action) {
@@ -66,8 +68,8 @@ function getModuleDeclarationStatements(node) {
 exports.getModuleDeclarationStatements = getModuleDeclarationStatements;
 function getCompilerOptions(dirPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        const tsconfigPath = path_1.join(dirPath, 'tsconfig.json');
-        if (!(yield fs_extra_1.pathExists(tsconfigPath))) {
+        const tsconfigPath = (0, path_1.join)(dirPath, 'tsconfig.json');
+        if (!(yield (0, fs_extra_1.pathExists)(tsconfigPath))) {
             throw new Error(`Need a 'tsconfig.json' file in ${dirPath}`);
         }
         return (yield readJson(tsconfigPath)).compilerOptions;

@@ -1,6 +1,7 @@
 "use strict";
 // Fixes temporarily moved here until they are published by tslint.
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const assert = require("assert");
 const Lint = require("tslint");
 const tsutils_1 = require("tsutils"); // tslint:disable-line no-implicit-dependencies (from tslint)
@@ -16,6 +17,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 /* tslint:disable:object-literal-sort-keys */
 Rule.metadata = {
     ruleName: "no-redundant-jsdoc",
@@ -29,13 +31,12 @@ Rule.metadata = {
 /* tslint:enable:object-literal-sort-keys */
 Rule.FAILURE_STRING_REDUNDANT_TYPE = "Type annotation in JSDoc is redundant in TypeScript code.";
 Rule.FAILURE_STRING_EMPTY = "JSDoc comment is empty.";
-exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile } = ctx;
     // Intentionally exclude EndOfFileToken: it can have JSDoc, but it is only relevant in JavaScript files
     return sourceFile.statements.forEach(function cb(node) {
-        if (tsutils_1.canHaveJsDoc(node)) {
-            for (const jd of tsutils_1.getJsDoc(node, sourceFile)) {
+        if ((0, tsutils_1.canHaveJsDoc)(node)) {
+            for (const jd of (0, tsutils_1.getJsDoc)(node, sourceFile)) {
                 const { tags } = jd;
                 if (tags === undefined || tags.length === 0) {
                     if (jd.comment === undefined) {

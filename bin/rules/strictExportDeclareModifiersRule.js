@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
@@ -8,6 +9,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "strict-export-declare-modifiers",
     description: "Enforces strict rules about where the 'export' and 'declare' modifiers may appear.",
@@ -16,7 +18,6 @@ Rule.metadata = {
     type: "style",
     typescriptOnly: true,
 };
-exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile } = ctx;
     const isExternal = sourceFile.isDeclarationFile
@@ -66,7 +67,7 @@ function walk(ctx) {
         }
     }
     function fail(node, reason) {
-        ctx.addFailureAtNode(node, util_1.failure(Rule.metadata.ruleName, reason));
+        ctx.addFailureAtNode(node, (0, util_1.failure)(Rule.metadata.ruleName, reason));
     }
     function mod(node, kind) {
         return node.modifiers.find(m => m.kind === kind);

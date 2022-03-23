@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkTslintJson = exports.lint = void 0;
 const assert = require("assert");
 const definitelytyped_header_parser_1 = require("./definitelytyped-header-parser");
 const fs_extra_1 = require("fs-extra");
@@ -18,7 +20,7 @@ const installer_1 = require("./installer");
 const util_1 = require("./util");
 function lint(dirPath, minVersion, maxVersion, inTypesVersionDirectory) {
     return __awaiter(this, void 0, void 0, function* () {
-        const tsconfigPath = path_1.join(dirPath, 'tsconfig.json');
+        const tsconfigPath = (0, path_1.join)(dirPath, 'tsconfig.json');
         const lintProgram = tslint_1.Linter.createProgram(tsconfigPath);
         for (const version of [maxVersion, minVersion]) {
             const errors = testDependencies(version, dirPath, lintProgram);
@@ -56,9 +58,9 @@ function lint(dirPath, minVersion, maxVersion, inTypesVersionDirectory) {
 }
 exports.lint = lint;
 function testDependencies(version, dirPath, lintProgram) {
-    const tsconfigPath = path_1.join(dirPath, 'tsconfig.json');
-    const ts = require(installer_1.typeScriptPath(version));
-    const program = expectRule_1.getProgram(tsconfigPath, ts, version, lintProgram);
+    const tsconfigPath = (0, path_1.join)(dirPath, 'tsconfig.json');
+    const ts = require((0, installer_1.typeScriptPath)(version));
+    const program = (0, expectRule_1.getProgram)(tsconfigPath, ts, version, lintProgram);
     const diagnostics = ts
         .getPreEmitDiagnostics(program)
         .filter(d => !d.file || isExternalDependency(d.file, dirPath, program));
@@ -76,12 +78,12 @@ function isExternalDependency(file, dirPath, program) {
     return !startsWithDirectory(file.fileName, dirPath) || program.isSourceFileFromExternalLibrary(file);
 }
 function isTypesVersionPath(fileName, dirPath) {
-    const subdirPath = util_1.withoutPrefix(fileName, dirPath);
+    const subdirPath = (0, util_1.withoutPrefix)(fileName, dirPath);
     return subdirPath && /^\/ts\d+\.\d/.test(subdirPath);
 }
 function startsWithDirectory(filePath, dirPath) {
-    const normalFilePath = path_1.normalize(filePath);
-    const normalDirPath = path_1.normalize(dirPath);
+    const normalFilePath = (0, path_1.normalize)(filePath);
+    const normalDirPath = (0, path_1.normalize)(dirPath);
     assert(!normalDirPath.endsWith('/') && !normalDirPath.endsWith('\\'));
     return normalFilePath.startsWith(normalDirPath + '/') || normalFilePath.startsWith(normalDirPath + '\\');
 }
@@ -112,14 +114,14 @@ function checkTslintJson(dirPath, dt) {
     return __awaiter(this, void 0, void 0, function* () {
         const configPath = getConfigPath(dirPath);
         const shouldExtend = `dtslint/${dt ? 'dt' : 'dtslint'}.json`;
-        if (!(yield fs_extra_1.pathExists(configPath))) {
+        if (!(yield (0, fs_extra_1.pathExists)(configPath))) {
             if (dt) {
                 throw new Error(`On DefinitelyTyped, must include \`tslint.json\` containing \`{ "extends": "${shouldExtend}" }\`.\n` +
                     'This was inferred as a DefinitelyTyped package because it contains a `// Type definitions for` header.');
             }
             return;
         }
-        const tslintJson = yield util_1.readJson(configPath);
+        const tslintJson = yield (0, util_1.readJson)(configPath);
         if (tslintJson.extends !== shouldExtend) {
             throw new Error(`If 'tslint.json' is present, it should extend "${shouldExtend}"`);
         }
@@ -127,12 +129,12 @@ function checkTslintJson(dirPath, dt) {
 }
 exports.checkTslintJson = checkTslintJson;
 function getConfigPath(dirPath) {
-    return path_1.join(dirPath, 'tslint.json');
+    return (0, path_1.join)(dirPath, 'tslint.json');
 }
 function getLintConfig(expectedConfigPath, tsconfigPath, minVersion, maxVersion) {
     return __awaiter(this, void 0, void 0, function* () {
-        const configExists = yield fs_extra_1.pathExists(expectedConfigPath);
-        const configPath = configExists ? expectedConfigPath : path_1.join(__dirname, '..', 'dtslint.json');
+        const configExists = yield (0, fs_extra_1.pathExists)(expectedConfigPath);
+        const configPath = configExists ? expectedConfigPath : (0, path_1.join)(__dirname, '..', 'dtslint.json');
         // Second param to `findConfiguration` doesn't matter, since config path is provided.
         const config = tslint_1.Configuration.findConfiguration(configPath, '').results;
         if (!config) {
@@ -145,7 +147,7 @@ function getLintConfig(expectedConfigPath, tsconfigPath, minVersion, maxVersion)
         if (expectRule) {
             const versionsToTest = range(minVersion, maxVersion).map(versionName => ({
                 versionName,
-                path: installer_1.typeScriptPath(versionName)
+                path: (0, installer_1.typeScriptPath)(versionName)
             }));
             const expectOptions = { tsconfigPath, versionsToTest };
             expectRule.ruleArguments = [expectOptions];

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const util_1 = require("../util");
 class Rule extends Lint.Rules.AbstractRule {
@@ -7,6 +8,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "trim-file",
     description: "Forbids leading/trailing blank lines in a file. Allows file to end in '\n'.",
@@ -15,9 +17,8 @@ Rule.metadata = {
     type: "style",
     typescriptOnly: false,
 };
-Rule.FAILURE_STRING_LEADING = util_1.failure(Rule.metadata.ruleName, "File should not begin with a blank line.");
-Rule.FAILURE_STRING_TRAILING = util_1.failure(Rule.metadata.ruleName, "File should not end with a blank line. (Ending in one newline OK, ending in two newlines not OK.)");
-exports.Rule = Rule;
+Rule.FAILURE_STRING_LEADING = (0, util_1.failure)(Rule.metadata.ruleName, "File should not begin with a blank line.");
+Rule.FAILURE_STRING_TRAILING = (0, util_1.failure)(Rule.metadata.ruleName, "File should not end with a blank line. (Ending in one newline OK, ending in two newlines not OK.)");
 function walk(ctx) {
     const { sourceFile: { text } } = ctx;
     if (text.startsWith("\r") || text.startsWith("\n")) {

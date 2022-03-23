@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
@@ -8,6 +9,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "prefer-declare-function",
     description: "Forbids `export const x = () => void`.",
@@ -16,10 +18,9 @@ Rule.metadata = {
     type: "style",
     typescriptOnly: true,
 };
-Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "Use a function declaration instead of a variable of function type.");
-exports.Rule = Rule;
+Rule.FAILURE_STRING = (0, util_1.failure)(Rule.metadata.ruleName, "Use a function declaration instead of a variable of function type.");
 function walk(ctx) {
-    util_1.eachModuleStatement(ctx.sourceFile, statement => {
+    (0, util_1.eachModuleStatement)(ctx.sourceFile, statement => {
         if (ts.isVariableStatement(statement)) {
             for (const varDecl of statement.declarationList.declarations) {
                 if (varDecl.type !== undefined && varDecl.type.kind === ts.SyntaxKind.FunctionType) {

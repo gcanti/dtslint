@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -28,8 +29,8 @@ function main() {
                 case '--installAll':
                     console.log('Cleaning old installs and installing for all TypeScript versions...');
                     console.log('Working...');
-                    yield installer_1.cleanInstalls();
-                    yield installer_1.installAll();
+                    yield (0, installer_1.cleanInstalls)();
+                    yield (0, installer_1.installAll)();
                     return;
                 case '--version':
                     console.log(require('../package.json').version);
@@ -53,20 +54,20 @@ function main() {
                             // which should be converted to   bla__foo
                             arg.substr(1).replace('/', '__')
                         : arg;
-                    dirPath = path_1.join(dirPath, path);
+                    dirPath = (0, path_1.join)(dirPath, path);
             }
         }
         if (shouldListen) {
             listen(dirPath);
             // Do this *after* to ensure messages sent during installation aren't dropped.
-            yield installer_1.installAll();
+            yield (0, installer_1.installAll)();
         }
         else {
             if (onlyTestTsNext) {
-                yield installer_1.installNext();
+                yield (0, installer_1.installNext)();
             }
             else {
-                yield installer_1.installAll();
+                yield (0, installer_1.installAll)();
             }
             yield runTests(dirPath, onlyTestTsNext);
         }
@@ -82,7 +83,7 @@ function usage() {
 function listen(dirPath) {
     process.on('message', (message) => {
         const { path, onlyTestTsNext } = message;
-        runTests(path_1.join(dirPath, path), onlyTestTsNext)
+        runTests((0, path_1.join)(dirPath, path), onlyTestTsNext)
             .catch(e => e.stack)
             .then(maybeError => {
             process.send({ path, status: maybeError === undefined ? 'OK' : maybeError });
@@ -92,8 +93,8 @@ function listen(dirPath) {
 }
 function runTests(dirPath, onlyTestTsNext) {
     return __awaiter(this, void 0, void 0, function* () {
-        const isOlderVersion = /^v\d+$/.test(path_1.basename(dirPath));
-        const indexText = yield fs_extra_1.readFile(path_1.join(dirPath, 'index.d.ts'), 'utf-8');
+        const isOlderVersion = /^v\d+$/.test((0, path_1.basename)(dirPath));
+        const indexText = yield (0, fs_extra_1.readFile)((0, path_1.join)(dirPath, 'index.d.ts'), 'utf-8');
         // If this *is* on DefinitelyTyped, types-publisher will fail if it can't parse the header.
         const dt = indexText.includes('// Type definitions for');
         if (dt) {
@@ -125,24 +126,24 @@ function runTests(dirPath, onlyTestTsNext) {
         const typesVersions = installer_2.availableVersions.slice(index);
         console.log('Running type-level tests for the following versions: ' + JSON.stringify(typesVersions));
         if (dt) {
-            yield checks_1.checkPackageJson(dirPath, typesVersions);
+            yield (0, checks_1.checkPackageJson)(dirPath, typesVersions);
         }
         if (onlyTestTsNext) {
             if (typesVersions.length === 0) {
                 yield testTypesVersion(dirPath, 'next', 'next', isOlderVersion, dt, indexText);
             }
             else {
-                const latestTypesVersion = util_1.last(typesVersions);
-                const versionPath = path_1.join(dirPath, `ts${latestTypesVersion}`);
-                const versionIndexText = yield fs_extra_1.readFile(path_1.join(versionPath, 'index.d.ts'), 'utf-8');
+                const latestTypesVersion = (0, util_1.last)(typesVersions);
+                const versionPath = (0, path_1.join)(dirPath, `ts${latestTypesVersion}`);
+                const versionIndexText = yield (0, fs_extra_1.readFile)((0, path_1.join)(versionPath, 'index.d.ts'), 'utf-8');
                 yield testTypesVersion(versionPath, 'next', 'next', isOlderVersion, dt, versionIndexText, 
                 /*inTypesVersionDirectory*/ true);
             }
         }
         else {
             const version = typesVersions[0];
-            const versionPath = path_1.join(dirPath, `ts${version}`);
-            const versionIndexText = yield fs_extra_1.readFile(path_1.join(versionPath, 'index.d.ts'), 'utf-8');
+            const versionPath = (0, path_1.join)(dirPath, `ts${version}`);
+            const versionIndexText = yield (0, fs_extra_1.readFile)((0, path_1.join)(versionPath, 'index.d.ts'), 'utf-8');
             yield testTypesVersion(versionPath, version, typesVersions[typesVersions.length - 1], isOlderVersion, dt, versionIndexText, 
             /*inTypesVersionDirectory*/ true);
             // await testTypesVersion(dirPath, undefined, getTsVersion(0), isOlderVersion, dt, indexText)
@@ -173,21 +174,21 @@ function testTypesVersion(dirPath, lowVersion, maxVersion, isOlderVersion, dt, i
             throw new Error(`Already in the \`ts${lowVersion}\` directory, don't need \`// TypeScript Version\`.`);
         }
         const minVersion = lowVersion || minVersionFromComment || definitelytyped_header_parser_1.TypeScriptVersion.lowest;
-        yield lint_1.checkTslintJson(dirPath, dt);
-        yield checks_1.checkTsconfig(dirPath, dt
+        yield (0, lint_1.checkTslintJson)(dirPath, dt);
+        yield (0, checks_1.checkTsconfig)(dirPath, dt
             ? { relativeBaseUrl: '..' + (isOlderVersion ? '/..' : '') + (inTypesVersionDirectory ? '/..' : '') + '/' }
             : undefined);
-        const err = yield lint_1.lint(dirPath, minVersion, maxVersion, !!inTypesVersionDirectory);
+        const err = yield (0, lint_1.lint)(dirPath, minVersion, maxVersion, !!inTypesVersionDirectory);
         if (err) {
             throw new Error(err);
         }
     });
 }
 function assertPathIsInDefinitelyTyped(dirPath) {
-    const parent = path_1.dirname(dirPath);
-    const types = /^v\d+$/.test(path_1.basename(dirPath)) ? path_1.dirname(parent) : parent;
-    const dt = path_1.dirname(types);
-    if (path_1.basename(dt) !== 'DefinitelyTyped' || path_1.basename(types) !== 'types') {
+    const parent = (0, path_1.dirname)(dirPath);
+    const types = /^v\d+$/.test((0, path_1.basename)(dirPath)) ? (0, path_1.dirname)(parent) : parent;
+    const dt = (0, path_1.dirname)(types);
+    if ((0, path_1.basename)(dt) !== 'DefinitelyTyped' || (0, path_1.basename)(types) !== 'types') {
         throw new Error('Since this type definition includes a header (a comment starting with `// Type definitions for`), ' +
             'assumed this was a DefinitelyTyped package.\n' +
             'But it is not in a `DefinitelyTyped/types/xxx` directory.');
@@ -203,7 +204,7 @@ function getTypeScriptVersionFromComment(text) {
     if (line.endsWith('\r')) {
         line = line.slice(0, line.length - 1);
     }
-    return definitelytyped_header_parser_1.parseTypeScriptVersionLine(line);
+    return (0, definitelytyped_header_parser_1.parseTypeScriptVersionLine)(line);
 }
 if (!module.parent) {
     main().catch(err => {

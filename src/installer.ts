@@ -6,7 +6,20 @@ import { TsVersion } from './lint'
 
 const installsDir = path.join(__dirname, '..', 'typescript-installs')
 
-export const availableVersions: Array<TypeScriptVersion> = ['3.5', '3.6', '3.7', '3.8', '3.9', '4.0', '4.1', '4.2']
+export const availableVersions: Array<TypeScriptVersion> = [
+  '3.5',
+  '3.6',
+  '3.7',
+  '3.8',
+  '3.9',
+  '4.0',
+  '4.1',
+  '4.2',
+  '4.3',
+  '4.4',
+  '4.5',
+  '4.6',
+]
 
 export async function installAll() {
   for (const v of availableVersions) {
@@ -62,7 +75,7 @@ function packageJson(version: TsVersion): {} {
     repository: 'N/A',
     license: 'MIT',
     dependencies: {
-      typescript: version
-    }
+      typescript: version,
+    },
   }
 }

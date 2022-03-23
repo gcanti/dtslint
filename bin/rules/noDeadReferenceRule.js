@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const util_1 = require("../util");
 class Rule extends Lint.Rules.AbstractRule {
@@ -7,6 +8,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "no-dead-reference",
     description: "Ensures that all `/// <reference>` comments go at the top of the file.",
@@ -16,8 +18,7 @@ Rule.metadata = {
     type: "functionality",
     typescriptOnly: true,
 };
-Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "`/// <reference>` directive must be at top of file to take effect.");
-exports.Rule = Rule;
+Rule.FAILURE_STRING = (0, util_1.failure)(Rule.metadata.ruleName, "`/// <reference>` directive must be at top of file to take effect.");
 function walk(ctx) {
     const { sourceFile: { statements, text } } = ctx;
     if (!statements.length) {

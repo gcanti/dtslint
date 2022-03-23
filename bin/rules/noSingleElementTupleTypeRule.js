@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
@@ -8,20 +9,21 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
-    ruleName: "no-single-element-tuple-type",
-    description: "Forbids `[T]`, which should be `T[]`.",
-    optionsDescription: "Not configurable.",
+    ruleName: 'no-single-element-tuple-type',
+    description: 'Forbids `[T]`, which should be `T[]`.',
+    optionsDescription: 'Not configurable.',
     options: null,
-    type: "functionality",
+    type: 'functionality',
     typescriptOnly: true,
 };
-exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile } = ctx;
     sourceFile.forEachChild(function cb(node) {
-        if (ts.isTupleTypeNode(node) && node.elementTypes.length === 1) {
-            ctx.addFailureAtNode(node, util_1.failure(Rule.metadata.ruleName, "Type [T] is a single-element tuple type. You probably meant T[]."));
+        var _a;
+        if (ts.isTupleTypeNode(node) && ((_a = node.elements) !== null && _a !== void 0 ? _a : node.elementTypes).length === 1) {
+            ctx.addFailureAtNode(node, (0, util_1.failure)(Rule.metadata.ruleName, 'Type [T] is a single-element tuple type. You probably meant T[].'));
         }
         node.forEachChild(cb);
     });

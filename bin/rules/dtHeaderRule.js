@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const definitelytyped_header_parser_1 = require("../definitelytyped-header-parser");
 const path_1 = require("path");
 const Lint = require("tslint");
@@ -9,6 +10,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: 'dt-header',
     description: 'Ensure consistency of DefinitelyTyped headers.',
@@ -17,7 +19,6 @@ Rule.metadata = {
     type: 'functionality',
     typescriptOnly: true
 };
-exports.Rule = Rule;
 function walk(ctx) {
     const { sourceFile } = ctx;
     const { text } = sourceFile;
@@ -25,16 +26,16 @@ function walk(ctx) {
         const lookFor = (search, explanation) => {
             const idx = text.indexOf(search);
             if (idx !== -1) {
-                ctx.addFailureAt(idx, search.length, util_1.failure(Rule.metadata.ruleName, explanation));
+                ctx.addFailureAt(idx, search.length, (0, util_1.failure)(Rule.metadata.ruleName, explanation));
             }
         };
         lookFor('// Type definitions for', 'Header should only be in `index.d.ts` of the root.');
         lookFor('// TypeScript Version', 'TypeScript version should be specified under header in `index.d.ts`.');
         return;
     }
-    const error = definitelytyped_header_parser_1.validate(text);
+    const error = (0, definitelytyped_header_parser_1.validate)(text);
     if (error) {
-        ctx.addFailureAt(error.index, 1, util_1.failure(Rule.metadata.ruleName, `Error parsing header. Expected: ${definitelytyped_header_parser_1.renderExpected(error.expected)}.`));
+        ctx.addFailureAt(error.index, 1, (0, util_1.failure)(Rule.metadata.ruleName, `Error parsing header. Expected: ${(0, definitelytyped_header_parser_1.renderExpected)(error.expected)}.`));
     }
     // Don't recurse, we're done.
 }
@@ -43,16 +44,16 @@ function isMainFile(fileName) {
     if (fileName === 'index.d.ts') {
         return true;
     }
-    if (path_1.basename(fileName) !== 'index.d.ts') {
+    if ((0, path_1.basename)(fileName) !== 'index.d.ts') {
         return false;
     }
-    let parent = path_1.dirname(fileName);
+    let parent = (0, path_1.dirname)(fileName);
     // May be a directory for an older version, e.g. `v0`.
     // Note a types redirect `foo/ts3.1` should not have its own header.
-    if (/^v\d+$/.test(path_1.basename(parent))) {
-        parent = path_1.dirname(parent);
+    if (/^v\d+$/.test((0, path_1.basename)(parent))) {
+        parent = (0, path_1.dirname)(parent);
     }
     // Allow "types/foo/index.d.ts", not "types/foo/utils/index.d.ts"
-    return path_1.basename(path_1.dirname(parent)) === 'types';
+    return (0, path_1.basename)((0, path_1.dirname)(parent)) === 'types';
 }
 //# sourceMappingURL=dtHeaderRule.js.map

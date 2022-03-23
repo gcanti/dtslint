@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
@@ -11,6 +12,7 @@ class Rule extends Lint.Rules.TypedRule {
         return this.applyWithFunction(sourceFile, ctx => walk(ctx, program.getTypeChecker()));
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "no-relative-import-in-test",
     description: "Forbids test (non-declaration) files to use relative imports.",
@@ -19,8 +21,7 @@ Rule.metadata = {
     type: "functionality",
     typescriptOnly: false,
 };
-exports.Rule = Rule;
-const FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "Test file should not use a relative import. Use a global import as if this were a user of the package.");
+const FAILURE_STRING = (0, util_1.failure)(Rule.metadata.ruleName, "Test file should not use a relative import. Use a global import as if this were a user of the package.");
 function walk(ctx, checker) {
     const { sourceFile } = ctx;
     for (const i of sourceFile.imports) {

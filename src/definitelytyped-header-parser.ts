@@ -36,6 +36,10 @@ export type TypeScriptVersion =
   | '4.1'
   | '4.2'
   | '4.3'
+  | '4.4'
+  | '4.5'
+  | '4.6'
+  | '4.7'
 export namespace TypeScriptVersion {
   export const all: ReadonlyArray<TypeScriptVersion> = [
     '2.0',
@@ -61,7 +65,11 @@ export namespace TypeScriptVersion {
     '4.0',
     '4.1',
     '4.2',
-    '4.3'
+    '4.3',
+    '4.4',
+    '4.5',
+    '4.6',
+    '4.7',
   ]
   export const lowest = all[0]
   /** Latest version that may be specified in a `// TypeScript Version:` header. */
@@ -73,7 +81,7 @@ export namespace TypeScriptVersion {
   }
 
   export function range(min: TypeScriptVersion): ReadonlyArray<TypeScriptVersion> {
-    return all.filter(v => v >= min)
+    return all.filter((v) => v >= min)
   }
 
   const allTags: ReadonlyArray<string> = [
@@ -92,7 +100,7 @@ export namespace TypeScriptVersion {
     'ts3.2',
     'ts3.3',
     'ts3.4',
-    'latest'
+    'latest',
   ]
 
   /** List of NPM tags that should be changed to point to the latest version. */
@@ -209,7 +217,7 @@ function headerParser(strict: boolean): pm.Parser<Header> {
       nonNpm: str.endsWith('non-npm package '),
       projects,
       contributors,
-      typeScriptVersion
+      typeScriptVersion,
     })
   )
 }
@@ -312,7 +320,7 @@ function parseLabel(strict: boolean): pm.Parser<Label> {
     return pm.makeSuccess<Label>(end, {
       name,
       major: intOfString(major),
-      minor: minor === 'x' ? 0 : intOfString(minor)
+      minor: minor === 'x' ? 0 : intOfString(minor),
     })
 
     function fail(msg?: string): pm.Reply<Label> {
@@ -327,7 +335,7 @@ function parseLabel(strict: boolean): pm.Parser<Label> {
 
 const typeScriptVersionLineParser: pm.Parser<TypeScriptVersion> = pm
   .regexp(/\/\/ TypeScript Version: (\d.(\d))/, 1)
-  .chain<TypeScriptVersion>(v =>
+  .chain<TypeScriptVersion>((v) =>
     TypeScriptVersion.all.includes(v as TypeScriptVersion)
       ? pm.succeed(v as TypeScriptVersion)
       : pm.fail(`TypeScript ${v} is not yet supported.`)

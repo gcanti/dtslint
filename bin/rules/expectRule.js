@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getProgram = exports.Rule = void 0;
 const fs_1 = require("fs");
 const path_1 = require("path");
 const Lint = require("tslint");
@@ -21,7 +22,7 @@ class Rule extends Lint.Rules.TypedRule {
             const program = getProgram(tsconfigPath, ts, versionName, lintProgram);
             return this.applyWithFunction(sourceFile, ctx => walk(ctx, program, ts, versionName, nextHigherVersion));
         };
-        const maxFailures = getFailures(util_1.last(versionsToTest), undefined);
+        const maxFailures = getFailures((0, util_1.last)(versionsToTest), undefined);
         if (maxFailures.length) {
             return maxFailures;
         }
@@ -42,6 +43,7 @@ class Rule extends Lint.Rules.TypedRule {
         throw new Error(); // unreachable -- at least the min version should have failures.
     }
 }
+exports.Rule = Rule;
 /* tslint:disable:object-literal-sort-keys */
 Rule.metadata = {
     ruleName: 'expect',
@@ -56,7 +58,6 @@ Rule.metadata = {
 Rule.FAILURE_STRING_DUPLICATE_ASSERTION = 'This line has 2 $ExpectType assertions.';
 Rule.FAILURE_STRING_ASSERTION_MISSING_NODE = 'Can not match a node to this assertion.';
 Rule.FAILURE_STRING_EXPECTED_ERROR = 'Expected an error on this line, but found none.';
-exports.Rule = Rule;
 const programCache = new WeakMap();
 /** Maps a tslint Program to one created with the version specified in `options`. */
 function getProgram(configFile, ts, versionName, lintProgram) {
@@ -74,15 +75,15 @@ function getProgram(configFile, ts, versionName, lintProgram) {
 }
 exports.getProgram = getProgram;
 function createProgram(configFile, ts) {
-    const projectDirectory = path_1.dirname(configFile);
+    const projectDirectory = (0, path_1.dirname)(configFile);
     const { config } = ts.readConfigFile(configFile, ts.sys.readFile);
     const parseConfigHost = {
         fileExists: fs_1.existsSync,
         readDirectory: ts.sys.readDirectory,
-        readFile: file => fs_1.readFileSync(file, 'utf8'),
+        readFile: file => (0, fs_1.readFileSync)(file, 'utf8'),
         useCaseSensitiveFileNames: true
     };
-    const parsed = ts.parseJsonConfigFileContent(config, parseConfigHost, path_1.resolve(projectDirectory), { noEmit: true });
+    const parsed = ts.parseJsonConfigFileContent(config, parseConfigHost, (0, path_1.resolve)(projectDirectory), { noEmit: true });
     const host = ts.createCompilerHost(parsed.options, true);
     return ts.createProgram(parsed.fileNames, parsed.options, host);
 }

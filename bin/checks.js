@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkTsconfig = exports.checkPackageJson = void 0;
 const assert = require("assert");
 const definitelytyped_header_parser_1 = require("./definitelytyped-header-parser");
 const fs_extra_1 = require("fs-extra");
@@ -15,21 +17,21 @@ const path_1 = require("path");
 const util_1 = require("./util");
 function checkPackageJson(dirPath, typesVersions) {
     return __awaiter(this, void 0, void 0, function* () {
-        const pkgJsonPath = path_1.join(dirPath, 'package.json');
+        const pkgJsonPath = (0, path_1.join)(dirPath, 'package.json');
         const needsTypesVersions = typesVersions.length !== 0;
-        if (!(yield fs_extra_1.pathExists(pkgJsonPath))) {
+        if (!(yield (0, fs_extra_1.pathExists)(pkgJsonPath))) {
             if (needsTypesVersions) {
                 throw new Error(`${dirPath}: Must have 'package.json' for "typesVersions"`);
             }
             return;
         }
-        const pkgJson = (yield util_1.readJson(pkgJsonPath));
+        const pkgJson = (yield (0, util_1.readJson)(pkgJsonPath));
         if (pkgJson.private !== true) {
             throw new Error(`${pkgJsonPath} should set \`"private": true\``);
         }
         if (needsTypesVersions) {
             assert.strictEqual(pkgJson.types, 'index', `"types" in '${pkgJsonPath}' should be "index".`);
-            const expected = definitelytyped_header_parser_1.makeTypesVersionsForPackageJson(typesVersions);
+            const expected = (0, definitelytyped_header_parser_1.makeTypesVersionsForPackageJson)(typesVersions);
             assert.deepEqual(pkgJson.typesVersions, expected, `"typesVersions" in '${pkgJsonPath}' is not set right. Should be: ${JSON.stringify(expected, undefined, 4)}`);
         }
         for (const key in pkgJson) {
@@ -55,7 +57,7 @@ function checkPackageJson(dirPath, typesVersions) {
 exports.checkPackageJson = checkPackageJson;
 function checkTsconfig(dirPath, dt) {
     return __awaiter(this, void 0, void 0, function* () {
-        const options = yield util_1.getCompilerOptions(dirPath);
+        const options = yield (0, util_1.getCompilerOptions)(dirPath);
         if (dt) {
             const { relativeBaseUrl } = dt;
             const mustHave = {

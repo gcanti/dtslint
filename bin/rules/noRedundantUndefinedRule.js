@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const ts = require("typescript");
 const util_1 = require("../util");
@@ -8,6 +9,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "no-redundant-undefined",
     description: "Forbids optional parameters/properties to include an explicit `undefined` in their type.",
@@ -16,10 +18,9 @@ Rule.metadata = {
     type: "style",
     typescriptOnly: true,
 };
-exports.Rule = Rule;
 function failureString(container) {
     const desc = container.kind === ts.SyntaxKind.Parameter ? "Parameter" : "Property";
-    return util_1.failure(Rule.metadata.ruleName, `${desc} is optional, so no need to specify \`undefined\` as a possible value.`);
+    return (0, util_1.failure)(Rule.metadata.ruleName, `${desc} is optional, so no need to specify \`undefined\` as a possible value.`);
 }
 function walk(ctx) {
     ctx.sourceFile.forEachChild(function recur(node) {

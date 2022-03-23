@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const Lint = require("tslint");
 const util_1 = require("../util");
 class Rule extends Lint.Rules.AbstractRule {
@@ -7,6 +8,7 @@ class Rule extends Lint.Rules.AbstractRule {
         return this.applyWithFunction(sourceFile, walk);
     }
 }
+exports.Rule = Rule;
 Rule.metadata = {
     ruleName: "no-bad-reference",
     description: 'Forbid <reference path="../etc"/> in any file, and forbid <reference path> in test files.',
@@ -15,9 +17,8 @@ Rule.metadata = {
     type: "functionality",
     typescriptOnly: true,
 };
-Rule.FAILURE_STRING = util_1.failure(Rule.metadata.ruleName, "Don't use <reference path> to reference another package. Use an import or <reference types> instead.");
-Rule.FAILURE_STRING_REFERENCE_IN_TEST = util_1.failure(Rule.metadata.ruleName, "Don't use <reference path> in test files. Use <reference types> or include the file in 'tsconfig.json'.");
-exports.Rule = Rule;
+Rule.FAILURE_STRING = (0, util_1.failure)(Rule.metadata.ruleName, "Don't use <reference path> to reference another package. Use an import or <reference types> instead.");
+Rule.FAILURE_STRING_REFERENCE_IN_TEST = (0, util_1.failure)(Rule.metadata.ruleName, "Don't use <reference path> in test files. Use <reference types> or include the file in 'tsconfig.json'.");
 function walk(ctx) {
     const { sourceFile } = ctx;
     for (const ref of sourceFile.referencedFiles) {

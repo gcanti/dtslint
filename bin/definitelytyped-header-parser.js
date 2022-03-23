@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseTypeScriptVersionLine = exports.renderExpected = exports.validate = exports.parseHeaderOrFail = exports.makeTypesVersionsForPackageJson = exports.isTypeScriptVersion = exports.TypeScriptVersion = void 0;
 const assert = require("assert");
 const pm = require("parsimmon");
 var TypeScriptVersion;
@@ -28,7 +29,11 @@ var TypeScriptVersion;
         '4.0',
         '4.1',
         '4.2',
-        '4.3'
+        '4.3',
+        '4.4',
+        '4.5',
+        '4.6',
+        '4.7',
     ];
     TypeScriptVersion.lowest = TypeScriptVersion.all[0];
     /** Latest version that may be specified in a `// TypeScript Version:` header. */
@@ -39,7 +44,7 @@ var TypeScriptVersion;
     }
     TypeScriptVersion.isPrerelease = isPrerelease;
     function range(min) {
-        return TypeScriptVersion.all.filter(v => v >= min);
+        return TypeScriptVersion.all.filter((v) => v >= min);
     }
     TypeScriptVersion.range = range;
     const allTags = [
@@ -58,7 +63,7 @@ var TypeScriptVersion;
         'ts3.2',
         'ts3.3',
         'ts3.4',
-        'latest'
+        'latest',
     ];
     /** List of NPM tags that should be changed to point to the latest version. */
     function tagsToUpdate(typeScriptVersion) {
@@ -138,7 +143,7 @@ function headerParser(strict) {
         nonNpm: str.endsWith('non-npm package '),
         projects,
         contributors,
-        typeScriptVersion
+        typeScriptVersion,
     }));
 }
 /*
@@ -223,7 +228,7 @@ function parseLabel(strict) {
         return pm.makeSuccess(end, {
             name,
             major: intOfString(major),
-            minor: minor === 'x' ? 0 : intOfString(minor)
+            minor: minor === 'x' ? 0 : intOfString(minor),
         });
         function fail(msg) {
             let expected = 'foo MAJOR.MINOR';
@@ -236,7 +241,7 @@ function parseLabel(strict) {
 }
 const typeScriptVersionLineParser = pm
     .regexp(/\/\/ TypeScript Version: (\d.(\d))/, 1)
-    .chain(v => TypeScriptVersion.all.includes(v)
+    .chain((v) => TypeScriptVersion.all.includes(v)
     ? pm.succeed(v)
     : pm.fail(`TypeScript ${v} is not yet supported.`));
 const typeScriptVersionParser = pm
