@@ -19,6 +19,7 @@ export const availableVersions: Array<TypeScriptVersion> = [
   '4.4',
   '4.5',
   '4.6',
+  '4.7',
 ]
 
 export async function installAll() {

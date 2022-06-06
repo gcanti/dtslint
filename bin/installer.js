@@ -27,6 +27,7 @@ exports.availableVersions = [
     '4.4',
     '4.5',
     '4.6',
+    '4.7',
 ];
 function installAll() {
     return __awaiter(this, void 0, void 0, function* () {
