@@ -41,6 +41,7 @@ export type TypeScriptVersion =
   | '4.6'
   | '4.7'
   | '4.8'
+  | '4.9'
 export namespace TypeScriptVersion {
   export const all: ReadonlyArray<TypeScriptVersion> = [
     '2.0',
@@ -72,6 +73,7 @@ export namespace TypeScriptVersion {
     '4.6',
     '4.7',
     '4.8',
+    '4.9',
   ]
   export const lowest = all[0]
   /** Latest version that may be specified in a `// TypeScript Version:` header. */
